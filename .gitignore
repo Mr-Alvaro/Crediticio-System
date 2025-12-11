@@ -1,0 +1,12 @@
+venv/ 
+__pycache__/ 
+*.pyc 
+*.db 
+*.json 
+*.pkl 
+*.joblib 
+*.h5 
+*.csv 
+*.xlsx 
+*.zip 
+.env 
