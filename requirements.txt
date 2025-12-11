@@ -7,3 +7,4 @@ matplotlib
 gunicorn
 scikit-fuzzy
 networkx
+firebase-admin
