@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Evaluación Crediticia Avanzado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: white;
+            color: #1a237e;
+            border-bottom: 3px solid #1a237e;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-section h3 {
+            color: #1a237e;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #1a237e;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a237e;
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a237e;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #0d47a1;
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .slider-value .current {
+            font-weight: 700;
+            color: #1a237e;
+            font-size: 1.1em;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #757575 0%, #616161 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a237e;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            border-radius: 15px;
+            display: none;
+            animation: slideIn 0.5s;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .results h3 {
+            text-align: center;
+            color: #1a237e;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .metric-card h4 {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .metric-card .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #1a237e;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: all 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .progress-green {
+            background: linear-gradient(90deg, #00c853 0%, #00e676 100%);
+        }
+
+        .progress-yellow {
+            background: linear-gradient(90deg, #ffd600 0%, #ffea00 100%);
+        }
+
+        .progress-orange {
+            background: linear-gradient(90deg, #ff6f00 0%, #ff8f00 100%);
+        }
+
+        .progress-red {
+            background: linear-gradient(90deg, #d50000 0%, #ff1744 100%);
+        }
+
+        .decision-box {
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .decision-approved {
+            background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+            color: white;
+        }
+
+        .decision-rejected {
+            background: linear-gradient(135deg, #d50000 0%, #ff1744 100%);
+            color: white;
+        }
+
+        .decision-review {
+            background: linear-gradient(135deg, #ff6f00 0%, #ffa000 100%);
+            color: white;
+        }
+
+        .decision-motivo {
+            font-size: 0.65em;
+            margin-top: 10px;
+            opacity: 0.95;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h4 {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Sistema de Evaluación Crediticia Avanzado</h1>
+            <p>Análisis Multicapa: Perfil Cliente + Entorno + Machine Learning</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('solicitud', this)">Nueva Solicitud</button>
+            <button class="tab" onclick="showTab('historial', this)">Historial</button>
+            <button class="tab" onclick="showTab('estadisticas', this)">Estadísticas</button>
+        </div>
+
+        <!-- TAB: Nueva Solicitud -->
+        <div id="solicitud" class="tab-content active">
+            <form id="creditForm">
+                <div class="form-grid">
+                    <!-- Datos Personales -->
+                    <div class="form-section">
+                        <h3>👤 Datos Personales</h3>
+                        
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender">Género</label>
+                            <select id="gender" name="gender" required>
+                                <option value="Male">Masculino</option>
+                                <option value="Female">Femenino</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="age">Rango de Edad</label>
+                            <select id="age" name="age" required>
+                                <option value="<25">Menor de 25</option>
+                                <option value="25-34">25-34</option>
+                                <option value="35-44" selected>35-44</option>
+                                <option value="45-54">45-54</option>
+                                <option value="55-64">55-64</option>
+                                <option value="65-74">65-74</option>
+                                <option value=">74">Mayor de 74</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="region">Región</label>
+                            <select id="region" name="region" required>
+                                <option value="North">Norte</option>
+                                <option value="South">Sur</option>
+                                <option value="Central">Central</option>
+                                <option value="North-East">Noreste</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Perfil Crediticio -->
+                    <div class="form-section">
+                        <h3>💳 Perfil Crediticio</h3>
+
+                        <div class="form-group">
+                            <label for="credit_worthiness">Calificación Crediticia</label>
+                            <select id="credit_worthiness" name="credit_worthiness" required>
+                                <option value="Excellent">Excelente (750+)</option>
+                                <option value="Good" selected>Bueno (650-749)</option>
+                                <option value="Fair">Regular (550-649)</option>
+                                <option value="Poor">Pobre (&lt;550)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="credit_type">Tipo de Crédito Solicitante</label>
+                            <select id="credit_type" name="credit_type" required>
+                                <option value="CIB">CIB</option>
+                                <option value="EXP">EXP</option>
+                                <option value="EQUI">EQUI</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loan_purpose">Propósito del Préstamo</label>
+                            <select id="loan_purpose" name="loan_purpose" required>
+                                <option value="Personal">Personal</option>
+                                <option value="Hipoteca" selected>Hipoteca</option>
+                                <option value="Auto">Automóvil</option>
+                                <option value="Comercial">Comercial</option>
+                                <option value="Educacion">Educación</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="approv_in_adv" name="approv_in_adv">
+                            <label for="approv_in_adv">¿Aprobación Previa?</label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="co_applicant" name="co_applicant">
+                            <label for="co_applicant">¿Tiene Co-solicitante?</label>
+                        </div>
+                    </div>
+
+                    <!-- Datos Financieros -->
+                    <div class="form-section">
+                        <h3>💰 Datos Financieros</h3>
+
+                        <div class="form-group">
+                            <label for="income">Ingresos Mensuales ($)</label>
+                            <div class="slider-container">
+                                <input type="range" id="income" name="income" min="500" max="50000" value="9480" step="100" class="slider">
+                                <div class="slider-value">
+                                    <span>$500</span>
+                                    <span class="current" id="incomeValue">$9,480</span>
+                                    <span>$50,000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loan_amount">Monto del Préstamo ($)</label>
+                            <div class="slider-container">
+                                <input type="range" id="loan_amount" name="loan_amount" min="5000" max="500000" value="150000" step="5000" class="slider">
+                                <div class="slider-value">
+                                    <span>$5K</span>
+                                    <span class="current" id="loanValue">$150,000</span>
+                                    <span>$500K</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="property_value">Valor de la Propiedad ($)</label>
+                            <div class="slider-container">
+                                <input type="range" id="property_value" name="property_value" min="50000" max="1000000" value="200000" step="10000" class="slider">
+                                <div class="slider-value">
+                                    <span>$50K</span>
+                                    <span class="current" id="propertyValue">$200,000</span>
+                                    <span>$1M</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="term">Plazo (meses)</label>
+                            <select id="term" name="term" required>
+                                <option value="60">60 meses (5 años)</option>
+                                <option value="120">120 meses (10 años)</option>
+                                <option value="180">180 meses (15 años)</option>
+                                <option value="240">240 meses (20 años)</option>
+                                <option value="360" selected>360 meses (30 años)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Estructura del Préstamo -->
+                    <div class="form-section">
+                        <h3>📋 Estructura del Préstamo</h3>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="neg_amortization" name="neg_amortization">
+                            <label for="neg_amortization">Amortización Negativa</label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="interest_only" name="interest_only">
+                            <label for="interest_only">Solo Intereses</label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="lump_sum_payment" name="lump_sum_payment">
+                            <label for="lump_sum_payment">Pago Único Final (Balloon)</label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="business_or_commercial" name="business_or_commercial">
+                            <label for="business_or_commercial">Propósito Comercial</label>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; font-size: 0.9em;">
+                            <strong>⚠️ Nota:</strong> Las opciones marcadas aumentan el nivel de riesgo y pueden afectar la decisión final.
+                        </div>
+                    </div>
+
+                    <!-- Factores Macroeconómicos -->
+                    <div class="form-section">
+                        <h3>🌍 Indicadores Económicos</h3>
+
+                        <div class="form-group">
+                            <label for="inflacion">📊 Inflación Anual (%)</label>
+                            <div class="slider-container">
+                                <input type="range" id="inflacion" name="inflacion" min="0" max="100" value="6" step="0.5" class="slider">
+                                <div class="slider-value">
+                                    <span>0%</span>
+                                    <span class="current" id="inflacionValue">6.0%</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+                            <small style="color: #666;">Óptimo: 2-4% | Preocupante: &gt;10%</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="desempleo">💼 Tasa de Desempleo (%)</label>
+                            <div class="slider-container">
+                                <input type="range" id="desempleo" name="desempleo" min="0" max="25" value="5.5" step="0.1" class="slider">
+                                <div class="slider-value">
+                                    <span>0%</span>
+                                    <span class="current" id="desempleoValue">5.5%</span>
+                                    <span>25%</span>
+                                </div>
+                            </div>
+                            <small style="color: #666;">Normal: 4-6% | Recesión: &gt;10%</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="combustible">⛽ Precio Combustible ($/galón)</label>
+                            <div class="slider-container">
+                                <input type="range" id="combustible" name="combustible" min="0" max="8" value="3.2" step="0.1" class="slider">
+                                <div class="slider-value">
+                                    <span>$0</span>
+                                    <span class="current" id="combustibleValue">$3.2</span>
+                                    <span>$8</span>
+                                </div>
+                            </div>
+                            <small style="color: #666;">Normal: $2-4 | Crisis: &gt;$6</small>
+                        </div>
+                    </div>
+
+                    <!-- Factores Sociales/Sanitarios -->
+                    <div class="form-section">
+                        <h3>🏥 Factores Sociales & Sanitarios</h3>
+
+                        <div class="form-group">
+                            <label for="protestas">🔥 Protestas (casos/mes)</label>
+                            <div class="slider-container">
+                                <input type="range" id="protestas" name="protestas" min="0" max="5000" value="500" step="50" class="slider">
+                                <div class="slider-value">
+                                    <span>0</span>
+                                    <span class="current" id="protestasValue">500</span>
+                                    <span>5,000</span>
+                                </div>
+                            </div>
+                            <small style="color: #666;">Tranquilo: 0-600 | Crisis: &gt;2,500</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="covid">🦠 Casos COVID (promedio diario)</label>
+                            <div class="slider-container">
+                                <input type="range" id="covid" name="covid" min="0" max="10000" value="800" step="100" class="slider">
+                                <div class="slider-value">
+                                    <span>0</span>
+                                    <span class="current" id="covidValue">800</span>
+                                    <span>10,000</span>
+                                </div>
+                            </div>
+                            <small style="color: #666;">Controlado: 0-1,000 | Crítico: &gt;5,000</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="clima">🌡️ Temperatura Promedio (°C)</label>
+                            <div class="slider-container">
+                                <input type="range" id="clima" name="clima" min="-10" max="40" value="20" step="1" class="slider">
+                                <div class="slider-value">
+                                    <span>-10°C</span>
+                                    <span class="current" id="climaValue">20°C</span>
+                                    <span>40°C</span>
+                                </div>
+                            </div>
+                            <small style="color: #666;">Normal: 15-25°C | Extremo: &lt;5 o &gt;35</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">🔄 Limpiar</button>
+                    <button type="button" class="btn btn-success" onclick="generarCasoAleatorio()">🎲 Caso Aleatorio</button>
+                    <button type="submit" class="btn btn-primary">🔍 ANALIZAR SOLICITUD</button>
+                </div>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analizando solicitud... Evaluando perfil crediticio y entorno económico</p>
+            </div>
+
+            <div class="results" id="results">
+                <h3>📊 RESULTADO DEL ANÁLISIS</h3>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h4>Score Cliente</h4>
+                        <div class="value" id="scoreClienteValue">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Riesgo Macro</h4>
+                        <div class="value" id="riesgoMacroValue">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>DTI Ratio</h4>
+                        <div class="value" id="dtiValue">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>LTV Ratio</h4>
+                        <div class="value" id="ltvValue">--</div>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Riesgo Macroeconómico (Lógica Difusa)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="riesgoMacroBar">0/10</div>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Probabilidad de Incumplimiento</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="probabilidadBar">0%</div>
+                    </div>
+                </div>
+
+                <div class="decision-box decision-review" id="decisionBox">
+                    <div id="decisionText">🔄 PROCESANDO</div>
+                    <div class="decision-motivo" id="motivoText">Análisis en proceso</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Historial -->
+        <div id="historial" class="tab-content">
+            <h2>📋 Historial de Solicitudes</h2>
+            <div id="historialContainer">
+                <p>Cargando historial...</p>
+            </div>
+        </div>
+
+        <!-- TAB: Estadísticas -->
+        <div id="estadisticas" class="tab-content">
+            <h2>📈 Estadísticas del Sistema</h2>
+            <div class="stat-grid" id="statsContainer">
+                <p>Cargando estadísticas...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Actualizar valores de sliders en tiempo real
+        const sliders = {
+            income: {elem: document.getElementById('income'), display: document.getElementById('incomeValue'), format: (v) => `${Number(v).toLocaleString()}`},
+            loan_amount: {elem: document.getElementById('loan_amount'), display: document.getElementById('loanValue'), format: (v) => `${Number(v).toLocaleString()}`},
+            property_value: {elem: document.getElementById('property_value'), display: document.getElementById('propertyValue'), format: (v) => `${Number(v).toLocaleString()}`},
+            inflacion: {elem: document.getElementById('inflacion'), display: document.getElementById('inflacionValue'), format: (v) => `${v}%`},
+            protestas: {elem: document.getElementById('protestas'), display: document.getElementById('protestasValue'), format: (v) => Number(v).toLocaleString()},
+            combustible: {elem: document.getElementById('combustible'), display: document.getElementById('combustibleValue'), format: (v) => `${v}`},
+            desempleo: {elem: document.getElementById('desempleo'), display: document.getElementById('desempleoValue'), format: (v) => `${v}%`},
+            covid: {elem: document.getElementById('covid'), display: document.getElementById('covidValue'), format: (v) => Number(v).toLocaleString()},
+            clima: {elem: document.getElementById('clima'), display: document.getElementById('climaValue'), format: (v) => `${v}°C`}
+        };
+
+        Object.keys(sliders).forEach(key => {
+            sliders[key].elem.addEventListener('input', function() {
+                sliders[key].display.textContent = sliders[key].format(this.value);
+            });
+        });
+
+        // Cambiar tabs
+        function showTab(tabName, clickedTab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            }
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'historial') {
+                cargarHistorial();
+            } else if (tabName === 'estadisticas') {
+                cargarEstadisticas();
+            }
+        }
+
+        // Limpiar formulario
+        function limpiarFormulario() {
+            document.getElementById('creditForm').reset();
+            Object.keys(sliders).forEach(key => {
+                sliders[key].display.textContent = sliders[key].format(sliders[key].elem.value);
+            });
+            document.getElementById('results').classList.remove('show');
+        }
+
+        // Generar caso aleatorio
+        function generarCasoAleatorio() {
+            const escenarios = [
+                {
+                    nombre: 'María Elena García',
+                    gender: 'Female',
+                    age: '35-44',
+                    region: 'Central',
+                    credit_worthiness: 'Excellent',
+                    credit_type: 'CIB',
+                    loan_purpose: 'Hipoteca',
+                    approv_in_adv: true,
+                    co_applicant: true,
+                    income: 25000,
+                    loan_amount: 150000,
+                    property_value: 220000,
+                    term: 180,
+                    neg_amortization: false,
+                    interest_only: false,
+                    lump_sum_payment: false,
+                    business_or_commercial: false,
+                    inflacion: 3.5,
+                    desempleo: 4.2,
+                    combustible: 2.8,
+                    protestas: 300,
+                    covid: 500,
+                    clima: 22
+                },
+                {
+                    nombre: 'Carlos Andrés Rodríguez',
+                    gender: 'Male',
+                    age: '25-34',
+                    region: 'North',
+                    credit_worthiness: 'Fair',
+                    credit_type: 'EXP',
+                    loan_purpose: 'Personal',
+                    approv_in_adv: false,
+                    co_applicant: false,
+                    income: 8000,
+                    loan_amount: 180000,
+                    property_value: 200000,
+                    term: 360,
+                    neg_amortization: false,
+                    interest_only: true,
+                    lump_sum_payment: false,
+                    business_or_commercial: false,
+                    inflacion: 12,
+                    desempleo: 7.5,
+                    combustible: 4.2,
+                    protestas: 1200,
+                    covid: 2500,
+                    clima: 19
+                },
+                {
+                    nombre: 'Ana Patricia Martínez',
+                    gender: 'Female',
+                    age: '45-54',
+                    region: 'South',
+                    credit_worthiness: 'Poor',
+                    credit_type: 'EQUI',
+                    loan_purpose: 'Comercial',
+                    approv_in_adv: false,
+                    co_applicant: false,
+                    income: 5000,
+                    loan_amount: 350000,
+                    property_value: 360000,
+                    term: 240,
+                    neg_amortization: true,
+                    interest_only: false,
+                    lump_sum_payment: true,
+                    business_or_commercial: true,
+                    inflacion: 65,
+                    desempleo: 18,
+                    combustible: 6.8,
+                    protestas: 4200,
+                    covid: 8500,
+                    clima: 38
+                }
+            ];
+
+            const caso = escenarios[Math.floor(Math.random() * escenarios.length)];
+
+            document.getElementById('nombre').value = caso.nombre;
+            document.getElementById('gender').value = caso.gender;
+            document.getElementById('age').value = caso.age;
+            document.getElementById('region').value = caso.region;
+            document.getElementById('credit_worthiness').value = caso.credit_worthiness;
+            document.getElementById('credit_type').value = caso.credit_type;
+            document.getElementById('loan_purpose').value = caso.loan_purpose;
+            document.getElementById('term').value = caso.term;
+
+            document.getElementById('approv_in_adv').checked = caso.approv_in_adv;
+            document.getElementById('co_applicant').checked = caso.co_applicant;
+            document.getElementById('neg_amortization').checked = caso.neg_amortization;
+            document.getElementById('interest_only').checked = caso.interest_only;
+            document.getElementById('lump_sum_payment').checked = caso.lump_sum_payment;
+            document.getElementById('business_or_commercial').checked = caso.business_or_commercial;
+
+            Object.keys(sliders).forEach(key => {
+                if (caso[key] !== undefined) {
+                    sliders[key].elem.value = caso[key];
+                    sliders[key].display.textContent = sliders[key].format(caso[key]);
+                }
+            });
+        }
+
+        // Enviar formulario
+        document.getElementById('creditForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                gender: document.getElementById('gender').value,
+                age: document.getElementById('age').value,
+                region: document.getElementById('region').value,
+                credit_worthiness: document.getElementById('credit_worthiness').value,
+                credit_type: document.getElementById('credit_type').value,
+                loan_purpose: document.getElementById('loan_purpose').value,
+                income: document.getElementById('income').value,
+                loan_amount: document.getElementById('loan_amount').value,
+                property_value: document.getElementById('property_value').value,
+                term: document.getElementById('term').value,
+                approv_in_adv: document.getElementById('approv_in_adv').checked,
+                co_applicant: document.getElementById('co_applicant').checked,
+                neg_amortization: document.getElementById('neg_amortization').checked,
+                interest_only: document.getElementById('interest_only').checked,
+                lump_sum_payment: document.getElementById('lump_sum_payment').checked,
+                business_or_commercial: document.getElementById('business_or_commercial').checked,
+                inflacion: document.getElementById('inflacion').value,
+                protestas: document.getElementById('protestas').value,
+                combustible: document.getElementById('combustible').value,
+                desempleo: document.getElementById('desempleo').value,
+                covid: document.getElementById('covid').value,
+                clima: document.getElementById('clima').value
+            };
+
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    document.getElementById('loading').classList.remove('show');
+                    return;
+                }
+
+                const scoreCliente = data.score_cliente ?? 0;
+                const riesgoDifuso = data.riesgo_difuso ?? 0;
+                const dti = data.dti ?? 0;
+                const ltv = data.ltv ?? 0;
+                const scoreFinal = data.score_final ?? 0;
+                const probabilidad = data.probabilidad ?? 0;
+                const decision = data.decision || 'PROCESANDO';
+                const motivo = data.motivo || 'Análisis en proceso';
+
+                document.getElementById('scoreClienteValue').textContent = scoreCliente.toFixed(0) + '/100';
+                document.getElementById('riesgoMacroValue').textContent = riesgoDifuso.toFixed(1) + '/10';
+                document.getElementById('dtiValue').textContent = dti.toFixed(1) + '%';
+                document.getElementById('ltvValue').textContent = ltv.toFixed(1) + '%';
+
+                const riesgoBar = document.getElementById('riesgoMacroBar');
+                const riesgoPorcentaje = (riesgoDifuso / 10) * 100;
+                riesgoBar.style.width = riesgoPorcentaje + '%';
+                riesgoBar.textContent = riesgoDifuso.toFixed(1) + '/10';
+                
+                if (riesgoDifuso <= 3) riesgoBar.className = 'progress-fill progress-green';
+                else if (riesgoDifuso <= 5) riesgoBar.className = 'progress-fill progress-yellow';
+                else if (riesgoDifuso <= 7) riesgoBar.className = 'progress-fill progress-orange';
+                else riesgoBar.className = 'progress-fill progress-red';
+
+                const probBar = document.getElementById('probabilidadBar');
+                probBar.style.width = probabilidad + '%';
+                probBar.textContent = probabilidad.toFixed(2) + '%';
+                
+                if (probabilidad < 25) probBar.className = 'progress-fill progress-green';
+                else if (probabilidad < 40) probBar.className = 'progress-fill progress-yellow';
+                else if (probabilidad < 60) probBar.className = 'progress-fill progress-orange';
+                else probBar.className = 'progress-fill progress-red';
+
+                const decisionBox = document.getElementById('decisionBox');
+                const decisionText = document.getElementById('decisionText');
+                const motivoText = document.getElementById('motivoText');
+
+                decisionText.textContent = decision;
+                motivoText.textContent = motivo;
+
+                if (decision === 'APROBADO') {
+                    decisionBox.className = 'decision-box decision-approved';
+                    decisionText.textContent = '✅ ' + decision;
+                } else if (decision === 'REVISIÓN MANUAL') {
+                    decisionBox.className = 'decision-box decision-review';
+                    decisionText.textContent = '⚠️ ' + decision;
+                } else if (decision === 'RECHAZADO') {
+                    decisionBox.className = 'decision-box decision-rejected';
+                    decisionText.textContent = '❌ ' + decision;
+                } else {
+                    decisionBox.className = 'decision-box decision-review';
+                    decisionText.textContent = '🔄 ' + decision;
+                }
+
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('results').classList.add('show');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al procesar la solicitud: ' + error.message);
+                document.getElementById('loading').classList.remove('show');
+            }
+        });
+
+        // Cargar historial
+        async function cargarHistorial() {
+            try {
+                const response = await fetch('/historial');
+                
+                if (!response.ok) {
+                    throw new Error('Error al obtener historial');
+                }
+                
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('historialContainer').innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                    return;
+                }
+
+                if (!data.historial || data.historial.length === 0) {
+                    document.getElementById('historialContainer').innerHTML = `
+                        <div style="text-align: center; padding: 40px; background: #f5f5f5; border-radius: 10px;">
+                            <h3 style="color: #666;">📋 No hay solicitudes registradas</h3>
+                            <p style="color: #999;">Las solicitudes procesadas aparecerán aquí</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<table><thead><tr>';
+                html += '<th>Fecha</th><th>Nombre</th><th>Monto</th><th>Crédito</th><th>DTI%</th><th>LTV%</th><th>Score</th><th>Prob%</th><th>Decisión</th>';
+                html += '</tr></thead><tbody>';
+
+                data.historial.forEach(row => {
+                    const decisionClass = row.decision === 'APROBADO' ? 'color: #00c853' : 
+                                         row.decision === 'REVISIÓN MANUAL' ? 'color: #ff6f00' : 'color: #d50000';
+                    
+                    html += `<tr>
+                        <td>${row.fecha || 'N/A'}</td>
+                        <td>${row.nombre || 'Sin nombre'}</td>
+                        <td>${Number(row.monto || 0).toLocaleString()}</td>
+                        <td>${row.credit_worthiness || 'N/A'}</td>
+                        <td>${(row.dti || 0).toFixed(1)}%</td>
+                        <td>${(row.ltv || 0).toFixed(1)}%</td>
+                        <td>${(row.score_cliente || 0).toFixed(0)}/100</td>
+                        <td>${(row.probabilidad || 0).toFixed(1)}%</td>
+                        <td style="${decisionClass}"><strong>${row.decision || 'N/A'}</strong></td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table>';
+                document.getElementById('historialContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error en cargarHistorial:', error);
+                document.getElementById('historialContainer').innerHTML = `
+                    <div style="text-align: center; padding: 40px; background: #fff3cd; border-radius: 10px;">
+                        <h3 style="color: #856404;">⚠️ Error al cargar historial</h3>
+                        <p style="color: #856404;">${error.message}</p>
+                        <p style="color: #999; font-size: 0.9em;">Intenta procesar una solicitud primero</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch('/estadisticas');
+                
+                if (!response.ok) {
+                    throw new Error('Error al obtener estadísticas');
+                }
+                
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('statsContainer').innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                    return;
+                }
+
+                const total = data.total ?? 0;
+                const aprobadas = data.aprobadas ?? 0;
+                const rechazadas = data.rechazadas ?? 0;
+                const revision = data.revision ?? 0;
+                const scorePromedio = data.score_cliente_promedio ?? 0;
+                const dtiPromedio = data.dti_promedio ?? 0;
+                const ltvPromedio = data.ltv_promedio ?? 0;
+                const tasaAprobacion = data.tasa_aprobacion ?? 0;
+
+                if (total === 0) {
+                    document.getElementById('statsContainer').innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: #f5f5f5; border-radius: 10px;">
+                            <h3 style="color: #666;">📊 No hay datos estadísticos</h3>
+                            <p style="color: #999;">Procesa algunas solicitudes para ver estadísticas</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const html = `
+                    <div class="stat-card">
+                        <h4>Total Solicitudes</h4>
+                        <div class="value">${total}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Aprobadas</h4>
+                        <div class="value">${aprobadas}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Rechazadas</h4>
+                        <div class="value">${rechazadas}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>En Revisión</h4>
+                        <div class="value">${revision}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Tasa Aprobación</h4>
+                        <div class="value">${tasaAprobacion.toFixed(1)}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Score Cliente Prom.</h4>
+                        <div class="value">${scorePromedio.toFixed(0)}/100</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>DTI Promedio</h4>
+                        <div class="value">${dtiPromedio.toFixed(1)}%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>LTV Promedio</h4>
+                        <div class="value">${ltvPromedio.toFixed(1)}%</div>
+                    </div>
+                `;
+
+                document.getElementById('statsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error en cargarEstadisticas:', error);
+                document.getElementById('statsContainer').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: #fff3cd; border-radius: 10px;">
+                        <h3 style="color: #856404;">⚠️ Error al cargar estadísticas</h3>
+                        <p style="color: #856404;">${error.message}</p>
+                        <p style="color: #999; font-size: 0.9em;">Intenta procesar una solicitud primero</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
