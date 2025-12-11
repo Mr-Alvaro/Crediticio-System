@@ -11,30 +11,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# =================== FIREBASE - INICIO ===================
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred, {
-    "projectId": "riesgo-crediticio-1dbae"
-})
-db = firestore.client()
-# ==================== FIREBASE - FIN =====================
-
-def guardar_evaluacion_en_firebase(entrada, resultado_modelo, riesgo_difuso):
-    """
-    Guarda una evaluación de crédito en Firebase Firestore.
-    """
-    try:
-        db.collection("evaluaciones_credito").add({
-            "entrada": entrada,                  # lo que envió el usuario
-            "resultado_modelo": resultado_modelo,  # por ejemplo probabilidad / clase
-            "riesgo_difuso": riesgo_difuso,        # el valor que te da calcular_riesgo_difuso
-            "timestamp": datetime.now().isoformat()
-        })
-    except Exception as e:
-        print(f"Error guardando en Firebase: {e}")
-# ==================== PRUEBA =====================
-
-
 # Cargar modelo y scaler
 modelo = joblib.load('models/Random_Forest_modelo_final.pkl')
 scaler = joblib.load('models/scaler_datos.pkl')
